@@ -73,21 +73,26 @@ class CleanupNullApiKeyIds {
         while(st.hasMoreTokens())
             tableNames.add(st.nextToken());
         for (String tableName : tableNames) {
+	    System.out.println("Processing " + tableName);
+
             resultSet = statement.executeQuery(String.format("select guestId, api from %s where apiKeyId is null group by guestId,api;", tableName));
             PreparedStatement pstmt = connect.prepareStatement(String.format("UPDATE %s SET apiKeyId=? WHERE api=? AND guestId=?", tableName));
             while(resultSet.next()) {
                 final int api = resultSet.getInt("api");
                 final long guestId = resultSet.getLong("guestId");
                 Long apiKeyId = apiKeys.get(String.format("%s_%s", api, guestId));
+
                 if (apiKeyId==null) {
-                    System.out.println(String.format("No apiKey for table %s api=%s, guestId=%s", tableName, api, guestId));
+                    System.out.println(String.format("  No apiKey for table %s api=%s, guestId=%s. To cleanup, execute:\n" +
+						     "    DELETE from %s where api=%s and guestId=%s;", 
+						     tableName, api, guestId, tableName, api, guestId));
                     continue;
                 }
                 pstmt.setLong(1, apiKeyId);
                 pstmt.setInt(2, api);
                 pstmt.setLong(3, guestId);
                 final int rowsUpdated = pstmt.executeUpdate();
-                System.out.println(rowsUpdated + tableName + " rows have been assigned an apiKeyId");
+                System.out.println("  " + rowsUpdated + " " + tableName + " rows have been assigned an apiKeyId");
             }
         }
     }
