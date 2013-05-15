@@ -83,10 +83,9 @@ class CleanupNullApiKeyIds {
                     System.out.println(String.format("No apiKey for table %s api=%s, guestId=%s", tableName, api, guestId));
                     continue;
                 }
-                pstmt.setString(1, tableName);
-                pstmt.setLong(2, apiKeyId);
-                pstmt.setInt(3, api);
-                pstmt.setLong(4, guestId);
+                pstmt.setLong(1, apiKeyId);
+                pstmt.setInt(2, api);
+                pstmt.setLong(3, guestId);
                 final int rowsUpdated = pstmt.executeUpdate();
                 System.out.println(rowsUpdated + tableName + " rows have been assigned an apiKeyId");
             }
