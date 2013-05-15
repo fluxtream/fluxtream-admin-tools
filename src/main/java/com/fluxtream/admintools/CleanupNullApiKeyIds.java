@@ -45,7 +45,6 @@ class CleanupNullApiKeyIds {
             apiKeys.put(String.format("%s_%s", api, guestId), apiKeyId);
         }
 
-        PreparedStatement pstmt = connect.prepareStatement("UPDATE ? SET apiKeyId=? WHERE api=? AND guestId=?");
         String list = "Facet_BodymediaBurn " +
                 "Facet_BodymediaSleep " +
                 "Facet_BodymediaSteps " +
@@ -75,6 +74,7 @@ class CleanupNullApiKeyIds {
             tableNames.add(st.nextToken());
         for (String tableName : tableNames) {
             resultSet = statement.executeQuery(String.format("select guestId, api from %s where apiKeyId is null group by guestId,api;", tableName));
+            PreparedStatement pstmt = connect.prepareStatement(String.format("UPDATE %s SET apiKeyId=? WHERE api=? AND guestId=?", tableName));
             while(resultSet.next()) {
                 final int api = resultSet.getInt("api");
                 final long guestId = resultSet.getLong("guestId");
