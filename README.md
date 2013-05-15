@@ -1,6 +1,6 @@
 Description
 -----------
-This is a CLI to Fluxtream's backend.
+Simple tool for the execution of migration scripts.
 
 Requirements
 ------------
@@ -12,16 +12,12 @@ run `mvn install` at the project's root
 
 Running
 -------
-`java -jar target/flx-jar-with-dependencies.jar $HOST $USERNAME`
-
-example:
-
-`java -jar target/flx-jar-with-dependencies.jar http://localhost candide`
+`java -jar target/flx-admin-tools.jar`
 
 Copyright and license
 ---------------------
 
-Copyright 2011-2012 Candide Kemmler
+Copyright 2011-2012 Candide Kemmler and the CMU Create Lab
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
