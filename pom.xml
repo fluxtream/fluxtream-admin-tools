@@ -32,8 +32,6 @@
 
     <build>
     
-    	<finalName>flx-admin-tools</finalName>
-
         <defaultGoal>install</defaultGoal>
 
         <plugins>
@@ -53,6 +51,8 @@
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
+                    <finalName>flx-admin-tools</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
                     <archive>
                         <manifest>
                             <mainClass>com.fluxtream.admintools.Main</mainClass>
@@ -66,7 +66,7 @@
                         <id>make-assembly</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>attached</goal>
+                            <goal>single</goal>
                         </goals>
                     </execution>
                 </executions>
