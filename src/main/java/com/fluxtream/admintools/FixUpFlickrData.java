@@ -1,5 +1,7 @@
 package com.fluxtream.admintools;
 
+import java.sql.SQLException;
+
 /**
  * User: candide
  * Date: 15/05/13
@@ -7,8 +9,8 @@ package com.fluxtream.admintools;
  */
 class FixUpFlickrData {
 
-    public void run() {
-
+    public void run() throws SQLException {
+        LocalTimeStorageFixUpHelper.fixUpStartAndEndTimeUsingLocalTimeStorage("Facet_FlickrPhoto");
     }
 
 }

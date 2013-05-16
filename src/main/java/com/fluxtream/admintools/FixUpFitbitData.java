@@ -1,9 +1,6 @@
 package com.fluxtream.admintools;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 /**
  * User: candide
@@ -13,13 +10,10 @@ import java.sql.Statement;
 class FixUpFitbitData {
 
     public void run() throws SQLException {
-        System.out.println("fixing up fitbit data");
-        final Connection connection = Main.getConnection();
-        final Statement statement = connection.createStatement();
-        final ResultSet resultSet = statement.executeQuery("select count(*) from Facet_FitbitWeight");
-        if (resultSet.next()) {
-            System.out.println("number of weight facets: " + resultSet.getLong(1));
-        }
+        LocalTimeStorageFixUpHelper.fixUpStartAndEndTimeUsingLocalTimeStorage("Facet_FitbitActivity");
+        LocalTimeStorageFixUpHelper.fixUpStartAndEndTimeUsingLocalTimeStorage("Facet_FitbitWeight");
+        LocalTimeStorageFixUpHelper.fixUpStartAndEndTimeUsingLocalTimeStorage("Facet_FitbitSleep");
+        LocalTimeStorageFixUpHelper.fixUpStartAndEndTimeUsingLocalTimeStorage("Facet_FitbitLoggedActivity");
     }
 
 }

@@ -69,7 +69,7 @@ public class Main {
         fixUpFlickrData.run();
     }
 
-    private static void fixUpZeoData() {
+    private static void fixUpZeoData() throws Exception {
         FixUpZeoData fixUpZeoData = new FixUpZeoData();
         fixUpZeoData.run();
     }
