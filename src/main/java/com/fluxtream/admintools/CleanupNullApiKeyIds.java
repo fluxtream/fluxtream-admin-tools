@@ -1,7 +1,5 @@
 package com.fluxtream.admintools;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.*;
 import java.util.*;
 
@@ -10,28 +8,12 @@ import java.util.*;
  * Date: 15/05/13
  * Time: 10:33
  */
-class CleanupNullApiKeyIds {
-
-    static Properties props;
-    static {
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public CleanupNullApiKeyIds() throws IOException {
-        props = new Properties();
-        InputStream inputStream = getClass().getClassLoader()
-                .getResourceAsStream("db.properties");
-        props.load(inputStream);
-    }
+class CleanupNullApiKeyIds{
 
     public void run() throws SQLException {
-        System.out.println("trying to connect using url: " + props.getProperty("db.url"));
-        Connection connect = DriverManager
-                .getConnection(props.getProperty("db.url"));
+        System.out.println("trying to connect using url: " + Main.props.getProperty("db.url"));
+
+        Connection connect = Main.getConnection();
 
         cleanupStaleData(connect);
 
