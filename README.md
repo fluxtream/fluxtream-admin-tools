@@ -6,6 +6,10 @@ Requirements
 ------------
 Java6+, maven
 
+Configuration
+--------
+Edit `src/main/resources/db.properties` to configure how the script will connect to your fluxtream DB
+
 Building
 --------
 run `mvn install` at the project's root
