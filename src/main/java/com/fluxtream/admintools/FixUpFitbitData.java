@@ -16,6 +16,8 @@ class FixUpFitbitData {
 
     public static DateTimeFormatter dateStorageFormat = DateTimeFormat.forPattern(
             "yyyy-MM-dd");
+    public static DateTimeFormatter timeStorageFormat = DateTimeFormat.forPattern(
+            "yyyy-MM-dd'T'HH:mm:ss.SSS");
 
     public void run() throws SQLException {
         LocalTimeStorageFixUpHelper.fixUpStartAndEndTimeUsingLocalTimeStorage("Facet_FitbitSleep");
@@ -49,18 +51,31 @@ class FixUpFitbitData {
         final Connection connection = Main.getConnection();
         final Statement statement = connection.createStatement();
         final PreparedStatement pstmt = connection.prepareStatement("UPDATE Facet_FitbitWeight SET start=?, end=? WHERE id=?");
-        final ResultSet resultSet = statement.executeQuery("SELECT id, date FROM Facet_FitbitWeight");
+        final ResultSet resultSet = statement.executeQuery("SELECT id, date, startTimeStorage FROM Facet_FitbitWeight WHERE startTimeStorage IS NOT NULL");
+
         while (resultSet.next()) {
             long id = resultSet.getLong(1);
             String dateStorage = resultSet.getString(2);
-            final DateTime dateTime = dateStorageFormat.withZoneUTC().parseDateTime(dateStorage);
+            String startTimeStorage = resultSet.getString(3);
 
-            long start = dateTime.getMillis() + DateTimeConstants.MILLIS_PER_DAY/2;
-            long end = dateTime.getMillis() + DateTimeConstants.MILLIS_PER_DAY/2;
+            if (startTimeStorage.indexOf("23:59")!=-1) {
+                final DateTime dateTime = dateStorageFormat.withZoneUTC().parseDateTime(dateStorage);
 
-            pstmt.setLong(1, start);
-            pstmt.setLong(2, end);
-            pstmt.setLong(3, id);
+                long start = dateTime.getMillis() + DateTimeConstants.MILLIS_PER_DAY/2;
+                long end = dateTime.getMillis() + DateTimeConstants.MILLIS_PER_DAY/2;
+
+                pstmt.setLong(1, start);
+                pstmt.setLong(2, end);
+                pstmt.setLong(3, id);
+            } else {
+                final DateTime dateTime = timeStorageFormat.withZoneUTC().parseDateTime(startTimeStorage);
+
+                long start = dateTime.getMillis();
+
+                pstmt.setLong(1, start);
+                pstmt.setLong(2, start);
+                pstmt.setLong(3, id);
+            }
 
             pstmt.executeUpdate();
         }
