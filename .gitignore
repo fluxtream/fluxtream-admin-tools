@@ -33,3 +33,4 @@ nbproject
 .svn
 .CVS
 .idea
+src/main/resources/db.properties
