@@ -10,10 +10,24 @@ import java.sql.SQLException;
 class FixUpFitbitData {
 
     public void run() throws SQLException {
-        LocalTimeStorageFixUpHelper.fixUpStartAndEndTimeUsingLocalTimeStorage("Facet_FitbitActivity");
-        LocalTimeStorageFixUpHelper.fixUpStartAndEndTimeUsingLocalTimeStorage("Facet_FitbitWeight");
         LocalTimeStorageFixUpHelper.fixUpStartAndEndTimeUsingLocalTimeStorage("Facet_FitbitSleep");
+
+        fixupFitbitWeight();
+        fixupFitbitActivity();
+        fixupLoggedActivity();
+    }
+
+    private void fixupLoggedActivity() throws SQLException {
         LocalTimeStorageFixUpHelper.fixUpStartAndEndTimeUsingLocalTimeStorage("Facet_FitbitLoggedActivity");
     }
+
+    private void fixupFitbitActivity() throws SQLException {
+        LocalTimeStorageFixUpHelper.fixUpStartAndEndTimeUsingLocalTimeStorage("Facet_FitbitActivity");
+    }
+
+    private void fixupFitbitWeight() throws SQLException {
+        LocalTimeStorageFixUpHelper.fixUpStartAndEndTimeUsingLocalTimeStorage("Facet_FitbitWeight");
+    }
+
 
 }
