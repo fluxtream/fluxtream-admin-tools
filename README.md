@@ -8,7 +8,8 @@ Java6+, maven
 
 Configuration
 --------
-Edit `src/main/resources/db.properties` to configure how the script will connect to your fluxtream DB
+Copy `src/main/resources/db.sample.properties` to `src/main/resources/db.properties` 
+and modify with your local settings to configure how the script will connect to your fluxtream DB
 
 Building
 --------
