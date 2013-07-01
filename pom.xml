@@ -32,6 +32,16 @@
             <artifactId>joda-time</artifactId>
             <version>2.1</version>
         </dependency>
+        <dependency>
+            <artifactId>commons-codec</artifactId>
+            <groupId>commons-codec</groupId>
+            <version>1.7</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
 
     </dependencies>
 

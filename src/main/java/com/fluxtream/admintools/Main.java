@@ -54,9 +54,17 @@ public class Main {
             case 4:
                 fixUpFitbitData();
                 break;
+            case 5:
+                storeApiKeyAttributes();
+                break;
             default:
                 System.out.println("not a valid option");
         }
+    }
+
+    private static void storeApiKeyAttributes() throws IOException, SQLException {
+        StoreApiKeyAttributes storeApiKeyAttributes = new StoreApiKeyAttributes();
+        storeApiKeyAttributes.run();
     }
 
     private static void fixUpFitbitData() throws Exception {
@@ -85,6 +93,7 @@ public class Main {
         System.out.println("\t  2: fix up zeo data");
         System.out.println("\t  3: fix up flickr data");
         System.out.println("\t  4: fix up fitbit data");
+        System.out.println("\t  5: store api key attributes");
     }
 
     public static Connection getConnection() throws SQLException {
