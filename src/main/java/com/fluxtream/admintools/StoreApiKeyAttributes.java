@@ -50,6 +50,13 @@ public class StoreApiKeyAttributes {
 
         for (Map<String, Object> connectorInfo : connectorInfos) {
             String[] attributeKeys = (String[]) connectorInfo.get("apiKeyAttributeKeys");
+
+	    if(attributeKeys==null) {
+		System.out.println("No attribute keys for " +  (String) connectorInfo.get("connectorName") + 
+				   "; skipping");
+		continue;
+	    }
+
             // we first check that all the attributes are available
             for (String attributeKey : attributeKeys) {
                 final Object attributeValue = props.get(attributeKey);
