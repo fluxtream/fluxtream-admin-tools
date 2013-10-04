@@ -19,15 +19,56 @@ public class StoreApiKeyAttributes {
     private DesEncrypter encrypter;
 
     private void loadProperties() throws IOException {
+	String resPath = Main.class.getClassLoader().getResource("other.properties").getPath();
+	System.out.println("Looking for other.properties in " + resPath);
+
         props = new Properties();
-        InputStream inputStream = Main.class.getClassLoader()
+        InputStream inputStream = null;
+
+	try {
+	    inputStream = Main.class.getClassLoader()
                 .getResourceAsStream("other.properties");
+	}
+	catch (Throwable e) {
+	    inputStream = null;
+	}
+
+	if(inputStream==null) {
+	    System.out.println("**** Could not find other.properties.  Please make sure it is in fluxtream-admin-tools/src/main/resources and rebuild");
+	    System.exit(-1);
+	}
+
         props.load(inputStream);
         final String oauthPropertiesPath = (String) props.get("oauth.properties.path");
-        inputStream = new FileInputStream(oauthPropertiesPath);
+	System.out.println("Looking for oauth.properties in " + oauthPropertiesPath);
+
+	try {
+	    inputStream = new FileInputStream(oauthPropertiesPath);
+	}
+	catch (Throwable e) {
+	    inputStream = null;
+	}
+
+	if(inputStream==null) {
+	    System.out.println("**** Could not find oauth.properties.  Please make sure fluxtream-admin-tools/src/main/resources/other.properties contains a valid oauth.properties.path value and rebuild");
+	    System.exit(-1);
+	}
+
         props.load(inputStream);
         final String commonPropertiesPath = (String) props.get("common.properties.path");
-        inputStream = new FileInputStream(commonPropertiesPath);
+	System.out.println("Looking for common.properties in " + commonPropertiesPath);
+
+	try {
+	    inputStream = new FileInputStream(commonPropertiesPath);
+	}
+	catch (Throwable e) {
+	    inputStream = null;
+	}
+
+	if(inputStream==null) {
+	    System.out.println("**** Could not find common.properties.  Please make sure fluxtream-admin-tools/src/main/resources/other.properties contains a valid common.properties.path value and rebuild");
+	    System.exit(-1);
+	}
         props.load(inputStream);
     }
 

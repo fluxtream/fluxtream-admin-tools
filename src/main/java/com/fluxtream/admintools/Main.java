@@ -22,20 +22,27 @@ public class Main {
     public static Properties props;
 
     private static void loadProperties() throws IOException {
-      String resPath = Main.class.getClassLoader().getResource("db.properties").getPath();
-      System.out.println("Looking for db.properties in " + resPath);
-
-	//URL main = Main.class.getResource("db.properties");
-	//if (main==null || !"file".equalsIgnoreCase(main.getProtocol())) {
-	//    System.out.println("Can't find path for db.properties");
-	//}
-	//File path = new File(main.getPath());
-	//System.out.println("Looking for db.properties in " + path.toString());
+	String resPath = Main.class.getClassLoader().getResource("db.properties").getPath();
+	System.out.println("Looking for db.properties in " + resPath);
 
         props = new Properties();
-        InputStream inputStream = Main.class.getClassLoader()
+        InputStream inputStream = null;
+
+	try {
+	    inputStream = Main.class.getClassLoader()
                 .getResourceAsStream("db.properties");
-        props.load(inputStream);
+	}
+	catch (Throwable e) {
+	    inputStream = null;
+	}
+
+	if(inputStream==null) {
+	    System.out.println("**** Could not find db.properties.  Please make sure it is in fluxtream-admin-tools/src/main/resources and rebuild");
+	    System.exit(-1);
+	}
+	else {
+	    props.load(inputStream);
+	}
     }
 
     public static void main(final String[] args) throws Exception {
