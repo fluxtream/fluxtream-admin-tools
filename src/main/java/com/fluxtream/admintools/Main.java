@@ -22,12 +22,15 @@ public class Main {
     public static Properties props;
 
     private static void loadProperties() throws IOException {
-	URL main = Main.class.getResource("db.properties");
-	if (main==null || !"file".equalsIgnoreCase(main.getProtocol())) {
-	    System.out.println("Can't find path for db.properties");
-	}
-	File path = new File(main.getPath());
-	System.out.println("Looking for db.properties in " + path.toString());
+      String resPath = Main.class.getClassLoader().getResource("db.properties").getPath();
+      System.out.println("Looking for db.properties in " + resPath);
+
+	//URL main = Main.class.getResource("db.properties");
+	//if (main==null || !"file".equalsIgnoreCase(main.getProtocol())) {
+	//    System.out.println("Can't find path for db.properties");
+	//}
+	//File path = new File(main.getPath());
+	//System.out.println("Looking for db.properties in " + path.toString());
 
         props = new Properties();
         InputStream inputStream = Main.class.getClassLoader()
@@ -36,11 +39,13 @@ public class Main {
     }
 
     public static void main(final String[] args) throws Exception {
-        if (args.length==0)
-            menu();
-        else {
-            handleMenuChoice(args);
-        }
+    loadProperties();
+    storeApiKeyAttributes();
+        //if (args.length==0)
+        //    menu();
+        //else {
+        //    handleMenuChoice(args);
+        //}
     }
 
     private static void handleMenuChoice(String[] args) throws Exception {
