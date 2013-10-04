@@ -6,6 +6,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.io.File;
+import java.net.URL;
 
 public class Main {
 
@@ -20,6 +22,13 @@ public class Main {
     public static Properties props;
 
     private static void loadProperties() throws IOException {
+	URL main = Main.class.getResource("db.properties");
+	if (main==null || !"file".equalsIgnoreCase(main.getProtocol())) {
+	    System.out.println("Can't find path for db.properties");
+	}
+	File path = new File(main.getPath());
+	System.out.println("Looking for db.properties in " + path.toString());
+
         props = new Properties();
         InputStream inputStream = Main.class.getClassLoader()
                 .getResourceAsStream("db.properties");
