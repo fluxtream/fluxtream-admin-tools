@@ -39,13 +39,11 @@ public class Main {
     }
 
     public static void main(final String[] args) throws Exception {
-    loadProperties();
-    storeApiKeyAttributes();
-        //if (args.length==0)
-        //    menu();
-        //else {
-        //    handleMenuChoice(args);
-        //}
+        if (args.length==0)
+            menu();
+        else {
+            handleMenuChoice(args);
+        }
     }
 
     private static void handleMenuChoice(String[] args) throws Exception {
