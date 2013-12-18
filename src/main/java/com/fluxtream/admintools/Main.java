@@ -6,8 +6,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
-import java.io.File;
-import java.net.URL;
 
 public class Main {
 
@@ -75,10 +73,17 @@ public class Main {
                 break;
             case 5:
                 storeApiKeyAttributes();
+            case 911:
+                exportMailingList();
                 break;
             default:
                 System.out.println("not a valid option");
         }
+    }
+
+    private static void exportMailingList() throws IOException, SQLException {
+        ExportMailingList exportMailingList = new ExportMailingList();
+        exportMailingList.run();
     }
 
     private static void storeApiKeyAttributes() throws IOException, SQLException {
@@ -113,6 +118,7 @@ public class Main {
         System.out.println("\t  3: fix up flickr data");
         System.out.println("\t  4: fix up fitbit data");
         System.out.println("\t  5: store api key attributes");
+        System.out.println("\t  911: export mailing list");
     }
 
     public static Connection getConnection() throws SQLException {
