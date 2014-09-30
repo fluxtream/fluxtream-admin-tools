@@ -25,11 +25,16 @@ public class ListAllChannelNames {
         Set<String> channelNames = new HashSet<String>();
         while (eachGuest.next()) {
             Long guestId = eachGuest.getLong(1);
+            String username = eachGuest.getString(2);
             final DatastoreUtils.ChannelInfoResponse channelInfoResponse = datastoreUtils.listSources(guestId);
-            for (Map.Entry<String,DatastoreUtils.ChannelSpecs> specsEntry : channelInfoResponse.channel_specs.entrySet()) {
-                final String channelName = specsEntry.getKey();
-                final String deviceName = channelName.split(".")[0];
-                channelNames.add(channelName);
+            if (channelInfoResponse!=null) {
+                for (Map.Entry<String, DatastoreUtils.ChannelSpecs> specsEntry : channelInfoResponse.channel_specs.entrySet()) {
+                    final String channelName = specsEntry.getKey();
+                    final String deviceName = channelName.split(".")[0];
+                    channelNames.add(channelName);
+                }
+            } else {
+                System.out.println("Could not parse channel mappings for " + username);
             }
         }
         for (String channelName : channelNames) {
