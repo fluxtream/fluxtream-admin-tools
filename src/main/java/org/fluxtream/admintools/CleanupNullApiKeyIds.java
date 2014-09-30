@@ -1,4 +1,4 @@
-package com.fluxtream.admintools;
+package org.fluxtream.admintools;
 
 import java.sql.*;
 import java.util.*;

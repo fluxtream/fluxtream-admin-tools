@@ -1,4 +1,4 @@
-package com.fluxtream.admintools;
+package org.fluxtream.admintools;
 
 import org.apache.commons.lang.StringUtils;
 

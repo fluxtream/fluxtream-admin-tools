@@ -1,4 +1,4 @@
-package com.fluxtream.admintools;
+package org.fluxtream.admintools;
 
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;

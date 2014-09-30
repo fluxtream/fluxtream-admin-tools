@@ -75,7 +75,7 @@
                     <appendAssemblyId>false</appendAssemblyId>
                     <archive>
                         <manifest>
-                            <mainClass>com.fluxtream.admintools.Main</mainClass>
+                            <mainClass>org.fluxtream.admintools.Main</mainClass>
                         </manifest>
                     </archive>
 

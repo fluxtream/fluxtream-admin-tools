@@ -1,4 +1,4 @@
-package com.fluxtream.admintools;
+package org.fluxtream.admintools;
 
 import java.io.IOException;
 import java.sql.Connection;
