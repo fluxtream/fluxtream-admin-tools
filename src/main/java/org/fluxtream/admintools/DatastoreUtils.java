@@ -79,9 +79,14 @@ public class DatastoreUtils {
         String result = dataStoreExecutionResult.getResponse();
 
         // TODO: check statusCode in DataStoreExecutionResult
-        ChannelInfoResponse infoResponse = gson.fromJson(result,ChannelInfoResponse.class);
-
-        return infoResponse;
+        try {
+            ChannelInfoResponse infoResponse = gson.fromJson(result, ChannelInfoResponse.class);
+            return infoResponse;
+        } catch (Throwable t) {
+            System.out.println("There were errors trying to parse JSON. Faulty data:\n");
+            System.out.println(result);
+            return null;
+        }
     }
 
     static class ChannelInfoResponse {

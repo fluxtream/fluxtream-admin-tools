@@ -21,11 +21,15 @@ public class FixUpChannelMappings {
             Long guestId = eachGuest.getLong(1);
             String username = eachGuest.getString(2);
             final DatastoreUtils.ChannelInfoResponse channelInfoResponse = datastoreUtils.listSources(guestId);
-            for (Map.Entry<String,DatastoreUtils.ChannelSpecs> specsEntry : channelInfoResponse.channel_specs.entrySet()) {
-                final String name = specsEntry.getKey();
-                final DatastoreUtils.ChannelSpecs channelSpecs = specsEntry.getValue();
-                System.out.println(name + ".channelType: " + channelSpecs.channelType);
-                System.out.println(name + ".objectTypeName: " + channelSpecs.objectTypeName);
+            if (channelInfoResponse!=null) {
+                for (Map.Entry<String, DatastoreUtils.ChannelSpecs> specsEntry : channelInfoResponse.channel_specs.entrySet()) {
+                    final String name = specsEntry.getKey();
+                    final DatastoreUtils.ChannelSpecs channelSpecs = specsEntry.getValue();
+                    System.out.println(name + ".channelType: " + channelSpecs.channelType);
+                    System.out.println(name + ".objectTypeName: " + channelSpecs.objectTypeName);
+                }
+            } else {
+                System.out.println("Could not parse channel mappings for " + username);
             }
         }
     }
