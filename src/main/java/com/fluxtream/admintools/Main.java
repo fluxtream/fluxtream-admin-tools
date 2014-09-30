@@ -73,12 +73,35 @@ public class Main {
                 break;
             case 5:
                 storeApiKeyAttributes();
+                break;
+            case 6:
+                listChannelNames();
+                break;
+            case 7:
+                listDeviceNames();
+                break;
+            case 8:
+                fixUpChannelMappings();
+                break;
             case 911:
                 exportMailingList();
                 break;
             default:
                 System.out.println("not a valid option");
         }
+    }
+
+    private static void listDeviceNames() throws IOException, SQLException {
+        new ListAllDeviceNames().run();
+    }
+
+    private static void listChannelNames() throws IOException, SQLException {
+        new ListAllChannelNames().run();
+    }
+
+    private static void fixUpChannelMappings() throws IOException, SQLException {
+        FixUpChannelMappings fixUpChannelMappings= new FixUpChannelMappings();
+        fixUpChannelMappings.run();
     }
 
     private static void exportMailingList() throws IOException, SQLException {
@@ -118,6 +141,9 @@ public class Main {
         System.out.println("\t  3: fix up flickr data");
         System.out.println("\t  4: fix up fitbit data");
         System.out.println("\t  5: store api key attributes");
+        System.out.println("\t  6: list all channel names");
+        System.out.println("\t  7: list all device names");
+        System.out.println("\t  8: fix up channel mappings");
         System.out.println("\t  911: export mailing list");
     }
 

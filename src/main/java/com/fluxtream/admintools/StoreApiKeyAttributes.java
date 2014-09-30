@@ -19,56 +19,53 @@ public class StoreApiKeyAttributes {
     private DesEncrypter encrypter;
 
     private void loadProperties() throws IOException {
-	String resPath = Main.class.getClassLoader().getResource("other.properties").getPath();
-	System.out.println("Looking for other.properties in " + resPath);
+        String resPath = Main.class.getClassLoader().getResource("other.properties").getPath();
+        System.out.println("Looking for other.properties in " + resPath);
 
         props = new Properties();
         InputStream inputStream = null;
 
-	try {
-	    inputStream = Main.class.getClassLoader()
-                .getResourceAsStream("other.properties");
-	}
-	catch (Throwable e) {
-	    inputStream = null;
-	}
+        try {
+            inputStream = Main.class.getClassLoader()
+                    .getResourceAsStream("other.properties");
+        } catch (Throwable e) {
+            inputStream = null;
+        }
 
-	if(inputStream==null) {
-	    System.out.println("**** Could not find other.properties.  Please make sure it is in fluxtream-admin-tools/src/main/resources and rebuild");
-	    System.exit(-1);
-	}
+        if (inputStream == null) {
+            System.out.println("**** Could not find other.properties.  Please make sure it is in fluxtream-admin-tools/src/main/resources and rebuild");
+            System.exit(-1);
+        }
 
         props.load(inputStream);
         final String oauthPropertiesPath = (String) props.get("oauth.properties.path");
-	System.out.println("Looking for oauth.properties in " + oauthPropertiesPath);
+        System.out.println("Looking for oauth.properties in " + oauthPropertiesPath);
 
-	try {
-	    inputStream = new FileInputStream(oauthPropertiesPath);
-	}
-	catch (Throwable e) {
-	    inputStream = null;
-	}
+        try {
+            inputStream = new FileInputStream(oauthPropertiesPath);
+        } catch (Throwable e) {
+            inputStream = null;
+        }
 
-	if(inputStream==null) {
-	    System.out.println("**** Could not find oauth.properties.  Please make sure fluxtream-admin-tools/src/main/resources/other.properties contains a valid oauth.properties.path value and rebuild");
-	    System.exit(-1);
-	}
+        if (inputStream == null) {
+            System.out.println("**** Could not find oauth.properties.  Please make sure fluxtream-admin-tools/src/main/resources/other.properties contains a valid oauth.properties.path value and rebuild");
+            System.exit(-1);
+        }
 
         props.load(inputStream);
         final String commonPropertiesPath = (String) props.get("common.properties.path");
-	System.out.println("Looking for common.properties in " + commonPropertiesPath);
+        System.out.println("Looking for common.properties in " + commonPropertiesPath);
 
-	try {
-	    inputStream = new FileInputStream(commonPropertiesPath);
-	}
-	catch (Throwable e) {
-	    inputStream = null;
-	}
+        try {
+            inputStream = new FileInputStream(commonPropertiesPath);
+        } catch (Throwable e) {
+            inputStream = null;
+        }
 
-	if(inputStream==null) {
-	    System.out.println("**** Could not find common.properties.  Please make sure fluxtream-admin-tools/src/main/resources/other.properties contains a valid common.properties.path value and rebuild");
-	    System.exit(-1);
-	}
+        if (inputStream == null) {
+            System.out.println("**** Could not find common.properties.  Please make sure fluxtream-admin-tools/src/main/resources/other.properties contains a valid common.properties.path value and rebuild");
+            System.exit(-1);
+        }
         props.load(inputStream);
     }
 
@@ -87,21 +84,21 @@ public class StoreApiKeyAttributes {
         Statement statement;
         statement = connect.createStatement();
 
-        List<Map<String,Object>> connectorInfos = getConnectorInfos(statement);
+        List<Map<String, Object>> connectorInfos = getConnectorInfos(statement);
 
         for (Map<String, Object> connectorInfo : connectorInfos) {
             String[] attributeKeys = (String[]) connectorInfo.get("apiKeyAttributeKeys");
 
-	    if(attributeKeys==null) {
-		System.out.println("No attribute keys for " + connectorInfo.get("connectorName") +
-				   "; skipping");
-		continue;
-	    }
+            if (attributeKeys == null) {
+                System.out.println("No attribute keys for " + connectorInfo.get("connectorName") +
+                        "; skipping");
+                continue;
+            }
 
             // we first check that all the attributes are available
             for (String attributeKey : attributeKeys) {
                 final Object attributeValue = props.get(attributeKey);
-                if (attributeValue==null) {
+                if (attributeValue == null) {
                     System.out.println("missing attribute value for key " + attributeKey);
                     return;
                 }
@@ -122,7 +119,7 @@ public class StoreApiKeyAttributes {
         PreparedStatement pstmt = connect.prepareStatement("INSERT INTO ApiKeyAttribute (attributeKey, attributeValue, apiKey_id) VALUES (?,?,?)");
         PreparedStatement existsPstmt = connect.prepareStatement("SELECT id FROM ApiKeyAttribute WHERE attributeKey=? AND apiKey_id=?");
         final String encryptedValue = encrypter.encrypt(attributeValue);
-        while(eachApiKey.next()) {
+        while (eachApiKey.next()) {
             long apiKeyId = eachApiKey.getLong(1);
             if (attributeKeyNotPresent(existsPstmt, attributeKey, apiKeyId)) {
                 pstmt.setString(1, attributeKey);
@@ -135,7 +132,7 @@ public class StoreApiKeyAttributes {
     }
 
     /**
-     *  WARNING: THIS IS UNTESTED
+     * WARNING: THIS IS UNTESTED
      */
     private boolean attributeKeyNotPresent(PreparedStatement existsPstmt, String attributeKey, long apiKeyId) throws SQLException {
         existsPstmt.setString(1, attributeKey);
@@ -146,9 +143,9 @@ public class StoreApiKeyAttributes {
 
     private List<Map<String, Object>> getConnectorInfos(Statement statement) throws SQLException {
         final ResultSet resultSet = statement.executeQuery("SELECT api, connectorName, apiKeyAttributeKeys FROM Connector");
-        List<Map<String,Object>> infos = new ArrayList<Map<String,Object>>();
-        while(resultSet.next()) {
-            Map<String,Object> connectorInfo = new HashMap<String,Object>();
+        List<Map<String, Object>> infos = new ArrayList<Map<String, Object>>();
+        while (resultSet.next()) {
+            Map<String, Object> connectorInfo = new HashMap<String, Object>();
             final int api = resultSet.getInt("api");
             final String apiKeyAttributeKeys = resultSet.getString("apiKeyAttributeKeys");
             final String connectorName = resultSet.getString("connectorName");
