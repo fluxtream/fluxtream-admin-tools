@@ -83,8 +83,8 @@ public class DatastoreUtils {
             ChannelInfoResponse infoResponse = gson.fromJson(result, ChannelInfoResponse.class);
             return infoResponse;
         } catch (Throwable t) {
-            System.out.println("There were errors trying to parse JSON. Faulty data:\n");
-            System.out.println(result);
+            t.printStackTrace();
+            System.exit(1);
             return null;
         }
     }
