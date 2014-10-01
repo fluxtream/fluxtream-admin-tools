@@ -30,7 +30,9 @@ public class ListAllDeviceNames {
             if (channelInfoResponse!=null) {
                 for (Map.Entry<String, DatastoreUtils.ChannelSpecs> specsEntry : channelInfoResponse.channel_specs.entrySet()) {
                     final String channelName = specsEntry.getKey();
-                    final String deviceName = channelName.split(".")[0];
+                    String deviceName = channelName;
+                    if (channelName.indexOf(".")>0)
+                        deviceName = channelName.split("\\.")[0];
                     deviceNames.add(deviceName);
                 }
             } else {

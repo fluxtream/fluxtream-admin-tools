@@ -89,13 +89,13 @@ public class DatastoreUtils {
         }
     }
 
-    static class ChannelInfoResponse {
+    public static class ChannelInfoResponse {
         Map<String,ChannelSpecs> channel_specs;
         double max_time;
         double min_time;
     }
 
-    static class ChannelSpecs{
+    public static class ChannelSpecs{
         String channelType;
         String objectTypeName;
         String time_type;
@@ -107,14 +107,14 @@ public class DatastoreUtils {
         }
     }
 
-    private static class ChannelBounds{
+    public static class ChannelBounds{
         double max_time;
         double max_value;
         double min_time;
         double min_value;
     }
 
-    class ChannelBoundsDeserializer implements JsonDeserializer<ChannelBounds> {
+    public static class ChannelBoundsDeserializer implements JsonDeserializer<ChannelBounds> {
         // Create a custom deserializer for ChannelBounds to deal with the possibility
         // of the values being interpreted as +/- Infinity and causing json creation errors
         // later on.  The min/max time fields are required.  The min/max value fields are
