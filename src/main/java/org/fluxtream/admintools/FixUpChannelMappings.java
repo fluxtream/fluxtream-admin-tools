@@ -24,7 +24,7 @@ public class FixUpChannelMappings {
     private final String JAWBONE_UP_DEVICE_NICKNAME = "Jawbone_UP";
 
     // as gathered from staging 10/1/2014
-    public final List<String> connectorDeviceNicknames = Arrays.asList(new String[]{FLUXTREAM_CAPTURE_DEVICE_NICKNAME, RUNKEEPER_DEVICE_NICKNAME,
+    public final List<String> connectorNicknames = Arrays.asList(new String[]{FLUXTREAM_CAPTURE_DEVICE_NICKNAME, RUNKEEPER_DEVICE_NICKNAME,
             FITBIT_DEVICE_NICKNAME, WITHINGS_DEVICE_NICKNAME, MYMEE_DEVICE_NICKNAME, ZEO_DEVICE_NICKNAME,
             BODYMEDIA_DEVICE_NICKNAME, JAWBONE_UP_DEVICE_NICKNAME});
     public final Map<String,Integer> apiCodes = new HashMap<String,Integer>();
@@ -45,8 +45,8 @@ public class FixUpChannelMappings {
         final Statement statement = connect.createStatement();
         final ResultSet eachGuest = statement.executeQuery("SELECT id, username FROM Guest ORDER BY id");
         DatastoreUtils datastoreUtils = new DatastoreUtils();
-        final PreparedStatement hasMappingStmt = connect.prepareStatement("SELECT count(*) FROM ChannelMapping WHERE guestId=? AND deviceName=? AND channelName=?");
-        final PreparedStatement addMappingStmt = connect.prepareStatement("INSERT INTO ChannelMapping (apiKeyId, deviceName, channelName, internalDeviceName, internalChannelName, channelType, guestId, timeType) VALUES (?,?,?,?,?,?,?,?)");
+        final PreparedStatement hasMappingStmt = connect.prepareStatement("SELECT * FROM ChannelMapping WHERE guestId=? AND deviceName=? AND channelName=?");
+        final PreparedStatement addMappingStmt = connect.prepareStatement("INSERT INTO ChannelMapping (apiKeyId, deviceName, channelName, internalDeviceName, internalChannelName, channelType, guestId, timeType, fixUp) VALUES (?,?,?,?,?,?,?,?, 'Y')");
 
         while (eachGuest.next()) {
             Long guestId = eachGuest.getLong(1);
@@ -54,41 +54,41 @@ public class FixUpChannelMappings {
             final DatastoreUtils.ChannelInfoResponse channelInfoResponse = datastoreUtils.listSources(guestId);
             if (channelInfoResponse!=null) {
                 for (Map.Entry<String, DatastoreUtils.ChannelSpecs> specsEntry : channelInfoResponse.channel_specs.entrySet()) {
+                    // a "fullyQualifiedChannelName" is the concatenation of a deviceName, a dot ('.') and a channelName
+                    // some device names are "internal" (/free form) while others map cleanly to Fluxtream connectors.
+                    // "Free form" device names will be assigned to the generic FluxtreamCapture connector here
                     final String fullyQualifiedChannelName = specsEntry.getKey();
                     String internalDeviceName = fullyQualifiedChannelName.split("\\.")[0];
-                    String internalChannelName = fullyQualifiedChannelName.split("\\.")[1];
-                    String deviceName = internalDeviceName;
-                    if (!connectorDeviceNicknames.contains(internalDeviceName))
-                        deviceName = "FluxtreamCapture";
+                    String channelName = fullyQualifiedChannelName.split("\\.")[1];
+                    String connectorNickname = internalDeviceName;
+                    if (!connectorNicknames.contains(internalDeviceName))
+                        connectorNickname = "FluxtreamCapture";
 //                    final DatastoreUtils.ChannelSpecs channelSpecs = specsEntry.getValue();
                     hasMappingStmt.setLong(1, guestId);
-                    hasMappingStmt.setString(2, deviceName);
-                    hasMappingStmt.setString(3, fullyQualifiedChannelName);
-                    boolean isMapped = hasMappingStmt.getResultSet()!=null && hasMappingStmt.getResultSet().next();
+                    hasMappingStmt.setString(2, connectorNickname);
+                    hasMappingStmt.setString(3, channelName);
+                    final ResultSet resultSet = hasMappingStmt.executeQuery();
+                    boolean isMapped = resultSet!=null && resultSet.next();
                     if (!isMapped) {
-                        Long apiKeyId = getApiKeyId(guestId, deviceName);
+                        System.out.print("Couldn't find " + guestId + "/" + connectorNickname + "/" + channelName);
+                        Long apiKeyId = getApiKeyId(guestId, connectorNickname, connect);
                         if (apiKeyId==null) {
-                            System.out.println(fullyQualifiedChannelName + " data should be cleaned up for guest " + guestId + "!!!");
+                            System.out.println("; couldn't find a corresponding apiKeyId either, thus skipping...");
+//                            System.out.println(fullyQualifiedChannelName + " data should be cleaned up for guest " + guestId + "!!!");
                             continue;
                         }
-                        System.out.println("we should add a channel mapping here: " + internalDeviceName + "/" + internalChannelName);
                         addMappingStmt.setLong(1, apiKeyId);
-                        if (!deviceName.equals(internalDeviceName)) {
-                            // if deviceName!=internalDeviceName, the deviceName is "FluxtreamCapture"
-                            addMappingStmt.setString(2, deviceName);
-                        } else {
-                            // otherwise use the device Nickname as in the datastore
-                            addMappingStmt.setString(2, internalDeviceName);
-                        }
-                        addMappingStmt.setString(3, internalChannelName);
+                        addMappingStmt.setString(2, connectorNickname);
+                        addMappingStmt.setString(3, channelName);
                         addMappingStmt.setString(4, internalDeviceName);
-                        addMappingStmt.setString(5, internalChannelName);
+                        addMappingStmt.setString(5, channelName);
                         addMappingStmt.setInt(6, 0);
                         addMappingStmt.setLong(7, guestId);
                         if (internalDeviceName.equalsIgnoreCase("Fitbit")||internalDeviceName.equalsIgnoreCase("Zeo"))
                             addMappingStmt.setInt(8, 1);
                         else
                             addMappingStmt.setInt(8, 0);
+                        System.out.println(" thus adding " + guestId + "/" + connectorNickname + "/" + channelName);
                         addMappingStmt.executeUpdate();
                     }
                 }
@@ -96,10 +96,14 @@ public class FixUpChannelMappings {
                 System.out.println("Could not parse channel mappings for " + username);
             }
         }
+        // finally, update Gestalt and state that this fixup was successfully executed
+        boolean hasGestalt = connect.createStatement().executeQuery("SELECT * FROM Gestalt").next();
+        if (!hasGestalt)
+            connect.createStatement().execute("INSERT INTO Gestalt (channelMappingsFixupWasExecuted) VALUES ('N')");
+        connect.createStatement().execute("update Gestalt set channelMappingsFixupWasExecuted='Y'");
     }
 
-    public Long getApiKeyId(final long guestId, final String deviceName) throws SQLException {
-        final Connection connect = Main.getConnection();
+    public Long getApiKeyId(final long guestId, final String deviceName, Connection connect) throws SQLException {
         final Statement statement = connect.createStatement();
         final ResultSet resultSet = statement.executeQuery("SELECT id FROM ApiKey WHERE api=" + apiCodes.get(deviceName) + " AND guestId=" + guestId);
         if (resultSet.next())
