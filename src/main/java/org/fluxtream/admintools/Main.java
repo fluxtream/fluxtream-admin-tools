@@ -99,7 +99,7 @@ public class Main {
         new ListAllChannelNames().run();
     }
 
-    private static void fixUpChannelMappings() throws IOException, SQLException {
+    private static void fixUpChannelMappings() throws Exception {
         FixUpChannelMappings fixUpChannelMappings= new FixUpChannelMappings();
         fixUpChannelMappings.run();
     }
