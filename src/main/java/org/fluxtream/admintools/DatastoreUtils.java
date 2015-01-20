@@ -76,17 +76,22 @@ public class DatastoreUtils {
 
     public ChannelInfoResponse listSources(Long guestId) {
         final DataStoreExecutionResult dataStoreExecutionResult = executeDataStore("info",new Object[]{"-r",guestId});
-        String result = dataStoreExecutionResult.getResponse();
-
-        // TODO: check statusCode in DataStoreExecutionResult
-        try {
-            ChannelInfoResponse infoResponse = gson.fromJson(result, ChannelInfoResponse.class);
-            return infoResponse;
-        } catch (Throwable t) {
-            t.printStackTrace();
-            System.exit(1);
-            return null;
+        int statusCode = dataStoreExecutionResult.getStatusCode();
+        if (statusCode==0) {
+            String result = dataStoreExecutionResult.getResponse();
+            // TODO: check statusCode in DataStoreExecutionResult
+            try {
+                ChannelInfoResponse infoResponse = gson.fromJson(result, ChannelInfoResponse.class);
+                return infoResponse;
+            } catch (Throwable t) {
+                t.printStackTrace();
+                System.exit(1);
+                return null;
+            }
+        } else {
+            System.out.println("WARNING: there was an error when executing the datastore's info util (statusCode=" + statusCode + ")");
         }
+        return null;
     }
 
     public static class ChannelInfoResponse {
